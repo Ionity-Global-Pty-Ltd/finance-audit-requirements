@@ -16,7 +16,7 @@ via [FormSubmit](https://formsubmit.co) (AJAX submit with plain-POST fallback).
 
 - Fun, celebratory finish — confetti burst on completion, progress cheers and emoji department cards.
 - Cross-platform ergonomics: notch/safe-area support, larger touch targets, focus-visible outlines and no-zoom inputs.
-- Welcome-page quick link chip to [www.ionity.xyz](https://www.ionity.xyz).
+- Welcome-page quick link chip to [www.ionity.co.za](https://www.ionity.co.za), placed below the QR share card.
 
 **V4.5 updates:**
 
