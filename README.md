@@ -3,12 +3,16 @@
 Branded requirements-gathering form for the Finance & Audit software selection
 and support project (REF **ION-SIN-2026** · DOC-2026-07-002 V1.0).
 
-Static, single-file, no backend. Responses are emailed to **ai@ionity.today**
+Static, single-file, no backend. Responses are emailed to
+**[ai@ionity.today](mailto:ai@ionity.today)**
 via [FormSubmit](https://formsubmit.co) (AJAX submit with plain-POST fallback).
 
-**V4.3 updates:**
+**V4.4 updates:**
+
 - New **Audit Findings** step that asks respondents where to investigate, without giving away answers.
-- Landing-page **QR code + share URL** so the form can be opened on phones/tablets and shared anywhere.
+- Real, scannable landing-page **QR code + share URL** for `www.ionity.art`.
+- Neutral cross-department system questions covering current tools, preferences and Sage X3 familiarity without assuming Sage 200 usage.
+- One-page **AI and problem-solving capacity check** with two short scenarios and private scoring in the submitted response.
 - Hardened global submission with AJAX retry and standard-POST fallback.
 
 ## Files
@@ -39,22 +43,23 @@ Public) → upload these files → Settings → Pages → Source: `main` / root 
 
 ## How global email delivery works
 
-The form posts to **ai@ionity.today** through FormSubmit.co. It works from any
+The form posts to **[ai@ionity.today](mailto:ai@ionity.today)** through
+[FormSubmit](https://formsubmit.co). It works from any
 device or country once the page is reachable (GitHub Pages, an embed/iframe,
 or a local copy opened on a tablet/phone):
 
 1. Browser sends the form data via AJAX to `https://formsubmit.co/ajax/ai@ionity.today`.
 2. If that fails (network, CORS, ad-blocker), it falls back to a standard
    `POST` to the same endpoint.
-3. FormSubmit emails a formatted table to **ai@ionity.today**.
+3. FormSubmit emails a formatted table to **[ai@ionity.today](mailto:ai@ionity.today)**.
 
 ## ⚠️ Activate email delivery (one submission, one click)
 
 FormSubmit requires a one-time activation per destination address:
 
 1. Open the live page and submit one test entry.
-2. FormSubmit sends an activation email to **ai@ionity.today** — click **Activate**.
-3. All submissions from then on arrive as formatted table emails at ai@ionity.today.
+2. FormSubmit sends an activation email to **[ai@ionity.today](mailto:ai@ionity.today)** — click **Activate**.
+3. All submissions from then on arrive as formatted table emails at [ai@ionity.today](mailto:ai@ionity.today).
 
 ## Embed
 
@@ -68,6 +73,6 @@ iframe `height` if the host page clips the form.
 - Section refs `F-01…F-06` follow the intake ledger; add sections by copying a `<section class="card">` block.
 
 ---
-© 2018–2026 Antwerp Designs | Ionity (Pty) Ltd · All rights reserved
+© 2018–2026 Antwerp Designs | Ionity Global (Pty) Ltd · All rights reserved
 Author: Johan Wilhelm van Antwerp · ORCID 0009-0005-7181-0347 · Policy AED 986
 *Building Tomorrow, Today.*
