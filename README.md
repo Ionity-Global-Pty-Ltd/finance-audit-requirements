@@ -21,7 +21,7 @@ via [FormSubmit](https://formsubmit.co) (AJAX submit with plain-POST fallback).
 **V4.5 updates:**
 
 - New **Audit Findings** step that asks respondents where to investigate, without giving away answers.
-- Real, scannable landing-page **QR code + share URL** for `https://www.ionity.art`.
+- Real, scannable landing-page **QR code + share URL** for `https://ionity.art` (www redirects to the apex domain).
 - Neutral cross-department system questions covering current tools, preferences and Sage X3 familiarity without assuming Sage 200 usage.
 - One-page **AI and problem-solving capacity check** with two short scenarios and private scoring in the submitted response.
 - Compact **Future Readiness** step covering continuity, ownership, restore awareness, access changes, data-use approval, change governance, outcome priorities and adoption support without naming a preferred vendor or pathway.
@@ -53,7 +53,7 @@ No `gh`? Web route: github.com → New repository (`Ionity-Global/finance-audit-
 Public) → upload these files → Settings → Pages → Source: `main` / root → Save.
 
 **Public link once live:**
-`https://www.ionity.art`
+`https://ionity.art` — `www.ionity.art` forwards here (apex holds the TLS certificate).
 
 ## How global email delivery works
 

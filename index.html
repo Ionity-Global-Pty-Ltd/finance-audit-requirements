@@ -271,8 +271,8 @@ footer a{color:#B9E4FA;text-decoration:none}
           <p class="share-hint">Scan the QR code to open this page on a phone or tablet. Anyone, anywhere can complete it.</p>
           <div class="share-url" id="shareUrl" title="Tap to copy"></div>
         </div>
-        <a class="qr-wrap" id="qrWrap" href="https://www.ionity.art" target="_blank" rel="noopener" aria-label="Open https://www.ionity.art">
-          <img class="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&amp;format=svg&amp;ecc=H&amp;margin=8&amp;color=0d1b2a&amp;data=https%3A%2F%2Fwww.ionity.art" alt="QR code for https://www.ionity.art" width="98" height="98">
+        <a class="qr-wrap" id="qrWrap" href="https://ionity.art" target="_blank" rel="noopener" aria-label="Open https://ionity.art">
+          <img class="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&amp;format=svg&amp;ecc=H&amp;margin=8&amp;color=0d1b2a&amp;data=https%3A%2F%2Fionity.art" alt="QR code for https://ionity.art" width="98" height="98">
         </a>
       </div>
 
@@ -623,7 +623,7 @@ footer a{color:#B9E4FA;text-decoration:none}
 
   <footer>
     <div class="sig">© 2018–2026 Antwerp Designs | Ionity Global (Pty) Ltd · All rights reserved</div>
-    <div class="footer-meta">Building Tomorrow, Today. · Policy AED 986 · <a href="https://www.ionity.art">https://www.ionity.art</a> · <a href="mailto:ai@ionity.today">ai@ionity.today</a></div>
+    <div class="footer-meta">Building Tomorrow, Today. · Policy AED 986 · <a href="https://ionity.art">https://ionity.art</a> · <a href="mailto:ai@ionity.today">ai@ionity.today</a></div>
   </footer>
 </div>
 
@@ -707,7 +707,7 @@ footer a{color:#B9E4FA;text-decoration:none}
   /* ---- share / QR ---- */
   const shareUrl=document.getElementById('shareUrl');
   const qrWrap=document.getElementById('qrWrap');
-  const pageUrl='https://www.ionity.art';
+  const pageUrl='https://ionity.art';
   if(shareUrl){shareUrl.textContent=pageUrl;shareUrl.addEventListener('click',()=>{navigator.clipboard.writeText(pageUrl).then(()=>{shareUrl.textContent='Copied!';setTimeout(()=>shareUrl.textContent=pageUrl,1500);}).catch(()=>{});});}
   const logoImg=document.querySelector('.logo-wrap img');
   if(qrWrap&&logoImg){
