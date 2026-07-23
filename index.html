@@ -141,6 +141,8 @@ input.invalid ~ .field-err,select.invalid ~ .field-err,textarea.invalid ~ .field
 .preset .tag{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase}
 .preset .pt{display:block;font-weight:600;font-size:1rem;color:var(--navy);margin:3px 0}
 .preset .pd{display:block;font-size:.83rem;color:var(--muted);line-height:1.4}
+#deptCards.invalid .preset{border-color:var(--err);background:#FEF6F6;animation:cardShake .3s ease}
+@keyframes cardShake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 
 /* Review */
 .review{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:6px}
@@ -797,7 +799,7 @@ function markErr(el){el.classList.add('invalid');const w=fieldWrap(el);if(w)w.cl
 
   function validateStep(i){
     // department choice on welcome
-    if(i===0){ if(!dept.value){showAlert(0,'Please choose your department to continue.');document.getElementById('deptCards').classList.add('invalid');return false;} hideAlert(0); return true; }
+    if(i===0){ if(!dept.value){showAlert(0,'Please choose your department to continue.');const dc=document.getElementById('deptCards');dc.classList.remove('invalid');void dc.offsetWidth;dc.classList.add('invalid');dc.scrollIntoView({behavior:'smooth',block:'center'});return false;} hideAlert(0); return true; }
     const reqs=REQ[i]||[];let ok=true,firstBad=null;
     reqs.forEach(([id])=>{const el=document.getElementById(id);const empty=!el.value||!el.value.trim();if(empty){markErr(el);ok=false;if(!firstBad)firstBad=el;}else clearErr(el);});
     const em=steps[i].querySelector('#email');
