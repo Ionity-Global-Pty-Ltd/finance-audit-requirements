@@ -6,6 +6,11 @@ and support project (REF **ION-SIN-2026** · DOC-2026-07-002 V1.0).
 Static, single-file, no backend. Responses are emailed to **ai@ionity.today**
 via [FormSubmit](https://formsubmit.co) (AJAX submit with plain-POST fallback).
 
+**V4.3 updates:**
+- New **Audit Findings** step that asks respondents where to investigate, without giving away answers.
+- Landing-page **QR code + share URL** so the form can be opened on phones/tablets and shared anywhere.
+- Hardened global submission with AJAX retry and standard-POST fallback.
+
 ## Files
 
 | File | Purpose |
@@ -31,6 +36,17 @@ Public) → upload these files → Settings → Pages → Source: `main` / root 
 
 **Public link once live:**
 `https://ionity-global.github.io/finance-audit-requirements/`
+
+## How global email delivery works
+
+The form posts to **ai@ionity.today** through FormSubmit.co. It works from any
+device or country once the page is reachable (GitHub Pages, an embed/iframe,
+or a local copy opened on a tablet/phone):
+
+1. Browser sends the form data via AJAX to `https://formsubmit.co/ajax/ai@ionity.today`.
+2. If that fails (network, CORS, ad-blocker), it falls back to a standard
+   `POST` to the same endpoint.
+3. FormSubmit emails a formatted table to **ai@ionity.today**.
 
 ## ⚠️ Activate email delivery (one submission, one click)
 
