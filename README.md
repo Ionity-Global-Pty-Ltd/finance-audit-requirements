@@ -35,7 +35,7 @@ No `gh`? Web route: github.com → New repository (`Ionity-Global/finance-audit-
 Public) → upload these files → Settings → Pages → Source: `main` / root → Save.
 
 **Public link once live:**
-`https://ionity-global.github.io/finance-audit-requirements/`
+`https://www.ionity.art`
 
 ## How global email delivery works
 

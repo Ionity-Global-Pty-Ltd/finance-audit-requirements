@@ -121,8 +121,9 @@ footer a{color:#B9E4FA;text-decoration:none}
 .share-hint{color:var(--muted);font-size:.86rem;margin-bottom:8px;line-height:1.4}
 .share-url{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--cyan);background:#fff;border:1px solid rgba(0,191,255,.25);border-radius:8px;padding:7px 10px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:.15s}
 .share-url:hover{background:var(--cyan-soft);border-color:var(--cyan)}
-.qr-wrap{flex:none;width:110px;height:110px;background:#fff;border-radius:10px;padding:6px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
-.qr-wrap img,.qr-wrap canvas{display:block;width:100%;height:100%}
+.qr-wrap{flex:none;position:relative;width:110px;height:110px;background:#fff;border-radius:10px;padding:6px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.qr-wrap img{display:block;width:100%;height:100%}
+.qr-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:#fff;padding:3px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
 .qr-placeholder{font-size:.7rem;color:var(--muted);display:flex;align-items:center;justify-content:center;height:100%;text-align:center}
 @media(max-width:520px){.share-card{flex-direction:column-reverse;align-items:flex-start}.qr-wrap{align-self:center}}
 </style>
@@ -462,32 +463,33 @@ footer a{color:#B9E4FA;text-decoration:none}
   /* ---- share / QR ---- */
   const shareUrl=document.getElementById('shareUrl');
   const qrWrap=document.getElementById('qrWrap');
-  const canonical='https://ionity-global.github.io/finance-audit-requirements/';
-  const pageUrl=canonical;
+  const pageUrl='https://www.ionity.art';
   if(shareUrl){shareUrl.textContent=pageUrl;shareUrl.addEventListener('click',()=>{navigator.clipboard.writeText(pageUrl).then(()=>{shareUrl.textContent='Copied!';setTimeout(()=>shareUrl.textContent=pageUrl,1500);}).catch(()=>{});});}
-  if(qrWrap && typeof QRCode!=='undefined'){
+  function renderQR(){
+    if(!qrWrap)return;
+    if(typeof QRCode==='undefined'){
+      qrWrap.innerHTML='<a href="'+pageUrl+'" class="qr-placeholder">QR unavailable.<br>Tap to open.</a>';
+      return;
+    }
     qrWrap.innerHTML='';
-    new QRCode(qrWrap,{text:pageUrl,width:98,height:98,colorDark:'#0d1b2a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-    // Centre the Ionity logo over the QR code after it renders
-    setTimeout(()=>{
+    try{
+      new QRCode(qrWrap,{text:pageUrl,width:98,height:98,colorDark:'#0d1b2a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+      const img=qrWrap.querySelector('img');
+      if(img){img.style.display='block';img.style.width='100%';img.style.height='100%';}
       const logoImg=document.querySelector('.logo-wrap img');
-      const qrEl=qrWrap.querySelector('img')||qrWrap.querySelector('canvas');
-      if(!qrEl||!logoImg)return;
-      const size=98;
-      const canvas=document.createElement('canvas');
-      canvas.width=size;canvas.height=size;
-      const ctx=canvas.getContext('2d');
-      ctx.drawImage(qrEl,0,0,size,size);
-      const logoSize=26;
-      const x=(size-logoSize)/2,y=(size-logoSize)/2;
-      ctx.fillStyle='#ffffff';
-      ctx.beginPath();ctx.arc(size/2,size/2,logoSize/2+3,0,Math.PI*2);ctx.fill();
-      ctx.drawImage(logoImg,x,y,logoSize,logoSize);
-      qrWrap.innerHTML='';qrWrap.appendChild(canvas);
-    },150);
-  }else if(qrWrap){
-    qrWrap.innerHTML='<div class="qr-placeholder">QR unavailable.<br>Open this URL to share.</div>';
+      if(logoImg){
+        const overlay=document.createElement('img');
+        overlay.className='qr-logo';
+        overlay.src=logoImg.src;
+        overlay.alt='Ionity';
+        overlay.width=28;overlay.height=28;
+        qrWrap.appendChild(overlay);
+      }
+    }catch(e){
+      qrWrap.innerHTML='<a href="'+pageUrl+'" class="qr-placeholder">QR failed.<br>Tap to open.</a>';
+    }
   }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderQR);else renderQR();
 })();
 </script>
 <script>
