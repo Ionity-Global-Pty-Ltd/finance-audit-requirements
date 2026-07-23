@@ -7,12 +7,15 @@ Static, single-file, no backend. Responses are emailed to
 **[ai@ionity.today](mailto:ai@ionity.today)**
 via [FormSubmit](https://formsubmit.co) (AJAX submit with plain-POST fallback).
 
-**V4.4 updates:**
+**V4.5 updates:**
 
 - New **Audit Findings** step that asks respondents where to investigate, without giving away answers.
-- Real, scannable landing-page **QR code + share URL** for `www.ionity.art`.
+- Real, scannable landing-page **QR code + share URL** for `https://www.ionity.art`.
 - Neutral cross-department system questions covering current tools, preferences and Sage X3 familiarity without assuming Sage 200 usage.
 - One-page **AI and problem-solving capacity check** with two short scenarios and private scoring in the submitted response.
+- Compact **Future Readiness** step covering continuity, ownership, restore awareness, access changes, data-use approval, change governance, outcome priorities and adoption support without naming a preferred vendor or pathway.
+- Public-form safety reminder that prevents respondents from entering credentials, client identifiers, health information, bank details or transaction-level data.
+- Modern **living data-grid backdrop** with moving network signals, one-pass heading glints, card traces and subtle control reveals, with a static reduced-motion mode.
 - Hardened global submission with AJAX retry and standard-POST fallback.
 
 ## Files
