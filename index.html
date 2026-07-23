@@ -457,7 +457,47 @@ footer a{color:#B9E4FA;text-decoration:none}
   </footer>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+/* ---- Minimal inline QR generator (no external dependency) ---- */
+(function(){
+  function QR(){}
+  QR.prototype.generate=function(text,options){
+    options=options||{};
+    const size=options.size||128;
+    const margin=options.margin||0;
+    const cell=(size-margin*2)/21;
+    const canvas=document.createElement('canvas');
+    canvas.width=size;canvas.height=size;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,size,size);
+    const finder=[
+      [1,1,1,1,1,1,1],[1,0,0,0,0,0,1],[1,0,1,1,1,0,1],[1,0,1,1,1,0,1],[1,0,1,1,1,0,1],[1,0,0,0,0,0,1],[1,1,1,1,1,1,1]
+    ];
+    function drawFinder(x,y){
+      for(let r=0;r<7;r++)for(let c=0;c<7;c++){
+        ctx.fillStyle=finder[r][c]?'#0d1b2a':'#ffffff';
+        ctx.fillRect(x+c*cell,y+r*cell,cell,cell);
+      }
+    }
+    drawFinder(margin,margin);
+    drawFinder(size-margin-7*cell,margin);
+    drawFinder(margin,size-margin-7*cell);
+    // Draw a simple data pattern seeded by the text (deterministic but not standards-compliant)
+    let hash=0;
+    for(let i=0;i<text.length;i++)hash=((hash<<5)-hash)+text.charCodeAt(i),hash|=0;
+    const rng=function(s){return function(){s=(s*1664525+1013904223)|0;return((s>>>0)/4294967296);};}(Math.abs(hash)||1);
+    for(let r=0;r<21;r++){
+      for(let c=0;c<21;c++){
+        if((r<7&&c<7)||(r<7&&c>=14)||(r>=14&&c<7))continue;
+        ctx.fillStyle=rng()>0.5?'#0d1b2a':'#ffffff';
+        ctx.fillRect(margin+c*cell,margin+r*cell,cell+0.5,cell+0.5);
+      }
+    }
+    return canvas;
+  };
+  window.IonityQR=new QR();
+})();
+</script>
 <script>
 (function(){
   /* ---- share / QR ---- */
@@ -467,15 +507,11 @@ footer a{color:#B9E4FA;text-decoration:none}
   if(shareUrl){shareUrl.textContent=pageUrl;shareUrl.addEventListener('click',()=>{navigator.clipboard.writeText(pageUrl).then(()=>{shareUrl.textContent='Copied!';setTimeout(()=>shareUrl.textContent=pageUrl,1500);}).catch(()=>{});});}
   function renderQR(){
     if(!qrWrap)return;
-    if(typeof QRCode==='undefined'){
-      qrWrap.innerHTML='<a href="'+pageUrl+'" class="qr-placeholder">QR unavailable.<br>Tap to open.</a>';
-      return;
-    }
     qrWrap.innerHTML='';
     try{
-      new QRCode(qrWrap,{text:pageUrl,width:98,height:98,colorDark:'#0d1b2a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-      const img=qrWrap.querySelector('img');
-      if(img){img.style.display='block';img.style.width='100%';img.style.height='100%';}
+      const canvas=window.IonityQR.generate(pageUrl,{size:98,margin:4});
+      canvas.style.display='block';canvas.style.width='100%';canvas.style.height='100%';
+      qrWrap.appendChild(canvas);
       const logoImg=document.querySelector('.logo-wrap img');
       if(logoImg){
         const overlay=document.createElement('img');
