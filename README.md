@@ -7,6 +7,11 @@ Static, single-file, no backend. Responses are emailed to
 **[ai@ionity.today](mailto:ai@ionity.today)**
 via [FormSubmit](https://formsubmit.co) (AJAX submit with plain-POST fallback).
 
+**V4.7 updates:**
+
+- Custom monochrome **Ionity icon set** — hand-drawn cyan line icons (navy/cyan brand palette only, matching [www.ionity.co.za](https://www.ionity.co.za)) replacing all multicolour emojis.
+- Brand-pure accents everywhere: backdrop signals, progress bar, confetti, live dots and completion tick now use only cyan/navy/white.
+
 **V4.6 updates:**
 
 - Fun, celebratory finish — confetti burst on completion, progress cheers and emoji department cards.
