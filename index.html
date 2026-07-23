@@ -468,6 +468,23 @@ footer a{color:#B9E4FA;text-decoration:none}
   if(qrWrap && typeof QRCode!=='undefined'){
     qrWrap.innerHTML='';
     new QRCode(qrWrap,{text:pageUrl,width:98,height:98,colorDark:'#0d1b2a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    // Centre the Ionity logo over the QR code after it renders
+    setTimeout(()=>{
+      const logoImg=document.querySelector('.logo-wrap img');
+      const qrEl=qrWrap.querySelector('img')||qrWrap.querySelector('canvas');
+      if(!qrEl||!logoImg)return;
+      const size=98;
+      const canvas=document.createElement('canvas');
+      canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(qrEl,0,0,size,size);
+      const logoSize=26;
+      const x=(size-logoSize)/2,y=(size-logoSize)/2;
+      ctx.fillStyle='#ffffff';
+      ctx.beginPath();ctx.arc(size/2,size/2,logoSize/2+3,0,Math.PI*2);ctx.fill();
+      ctx.drawImage(logoImg,x,y,logoSize,logoSize);
+      qrWrap.innerHTML='';qrWrap.appendChild(canvas);
+    },150);
   }else if(qrWrap){
     qrWrap.innerHTML='<div class="qr-placeholder">QR unavailable.<br>Open this URL to share.</div>';
   }
