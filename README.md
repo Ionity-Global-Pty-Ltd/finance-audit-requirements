@@ -7,6 +7,12 @@ Static, single-file, no backend. Responses are emailed to
 **[ai@ionity.today](mailto:ai@ionity.today)**
 via [FormSubmit](https://formsubmit.co) (AJAX submit with plain-POST fallback).
 
+**V4.6 updates:**
+
+- Fun, celebratory finish — confetti burst on completion, progress cheers and emoji department cards.
+- Cross-platform ergonomics: notch/safe-area support, larger touch targets, focus-visible outlines and no-zoom inputs.
+- Welcome-page quick link chip to [www.ionity.xyz](https://www.ionity.xyz).
+
 **V4.5 updates:**
 
 - New **Audit Findings** step that asks respondents where to investigate, without giving away answers.
