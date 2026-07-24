@@ -7,6 +7,15 @@ Static, single-file, no backend. Responses are emailed to
 **[ai@ionity.today](mailto:ai@ionity.today)**
 via [FormSubmit](https://formsubmit.co) (AJAX submit with plain-POST fallback).
 
+**V4.8 updates:**
+
+- **Submission reference ID** — every submission generates a unique `ION-XXXX-XXXX-XXXX` reference shown on the done screen with a one-click copy button. The reference is also included in the emailed data table for easy tracking.
+- **Reply-To header** — if the respondent provides an email, it is forwarded to FormSubmit as `_replyto` so the audit team can reply directly from their inbox.
+- **Submission timestamp** — ISO 8601 timestamp included in the emailed table.
+- **Auto-save toast** — a brief "Progress saved" notification appears (max once per 5 s) when the form saves progress to localStorage, giving clear feedback on multi-device use.
+- **Character counters** — live character counts on the five key open-text fields (`Biggest challenge`, `What is not working`, `Specific concerns`, `Problem-solving reasoning`, `Recommendations`).
+- **Improved AJAX retry** — AJAX now retries up to 3 times with exponential back-off before falling back to a standard POST.
+
 **V4.7 updates:**
 
 - Custom monochrome **Ionity icon set** — hand-drawn cyan line icons (navy/cyan brand palette only, matching [www.ionity.co.za](https://www.ionity.co.za)) replacing all multicolour emojis.

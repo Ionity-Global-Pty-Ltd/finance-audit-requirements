@@ -164,6 +164,21 @@ footer a{color:#B9E4FA;text-decoration:none}
 .honey{position:absolute;left:-9999px;opacity:0;height:0;width:0}
 .savenote{font-size:.72rem;color:#8FB6CE;margin-top:8px;text-align:right;font-family:'IBM Plex Mono',monospace}
 
+/* Save toast */
+.save-toast{position:fixed;bottom:max(22px,env(safe-area-inset-bottom));right:max(18px,env(safe-area-inset-right));z-index:9;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;color:var(--navy);background:rgba(0,224,255,.92);border-radius:8px;padding:7px 14px;pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .22s,transform .22s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.save-toast.show{opacity:1;transform:translateY(0)}
+
+/* Submission reference block on done screen */
+.sub-ref{margin:18px auto 12px;max-width:340px;background:var(--cyan-soft);border:1px dashed rgba(0,191,255,.45);border-radius:12px;padding:14px 18px;text-align:center}
+.sub-ref .ref-label{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
+.sub-ref .ref-id{font-family:'IBM Plex Mono',monospace;font-size:1.08rem;letter-spacing:.1em;color:var(--navy);font-weight:700;margin-bottom:10px;word-break:break-all}
+.sub-ref .copy-btn{font-family:'Orbitron',sans-serif;font-size:.72rem;letter-spacing:.06em;color:var(--navy);background:linear-gradient(135deg,var(--cyan-2),var(--cyan));border:none;border-radius:8px;padding:7px 16px;cursor:pointer;transition:.15s}
+.sub-ref .copy-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.sub-ref .copy-btn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+
+/* Character counter */
+.char-hint{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:#9aa9b8;text-align:right;margin-top:3px;letter-spacing:.04em}
+
 /* Share / QR on welcome */
 .share-card{display:flex;gap:16px;align-items:center;margin-top:22px;padding:16px 18px;border:1px dashed rgba(0,191,255,.35);border-radius:14px;background:rgba(0,191,255,.06)}
 .share-text{flex:1;min-width:0}
@@ -211,6 +226,9 @@ footer a{color:#B9E4FA;text-decoration:none}
     <input type="hidden" id="dept" name="Department" value="">
     <input type="hidden" id="aiScore" name="AI problem-solving score" value="Not completed">
     <input type="text" name="_honey" class="honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <input type="hidden" id="subRef" name="Submission Reference" value="">
+    <input type="hidden" id="subTime" name="Submission Time" value="">
+    <input type="hidden" id="replyTo" name="_replyto" value="">
 
     <datalist id="challengeSug">
       <option value="Approvals take too long, so payments get delayed"></option>
@@ -619,6 +637,11 @@ footer a{color:#B9E4FA;text-decoration:none}
         <div class="tick">✓</div>
         <h2>Thank you — your feedback is in!</h2>
         <p class="hint">It’s been sent to the audit team (<a href="mailto:ai@ionity.today">ai@ionity.today</a>) and will help decide what to review, change and recommend. You just made the audit smarter — high five.</p>
+        <div class="sub-ref" id="doneRef">
+          <div class="ref-label">Submission Reference</div>
+          <div class="ref-id" id="doneRefId">—</div>
+          <button type="button" class="copy-btn" id="copyRefBtn">Copy Reference</button>
+        </div>
         <a class="chip" href="https://www.ionity.co.za" target="_blank" rel="noopener"><span class="dot-live"></span> Explore more at www.ionity.co.za ↗</a>
       </div>
     </section>
@@ -629,6 +652,7 @@ footer a{color:#B9E4FA;text-decoration:none}
     <div class="footer-meta">Building Tomorrow, Today. · Policy AED 986 · <a href="https://ionity.art">https://ionity.art</a> · <a href="mailto:ai@ionity.today">ai@ionity.today</a></div>
   </footer>
 </div>
+<div class="save-toast" id="saveToast" aria-live="polite" aria-atomic="true">Progress saved</div>
 
 <script>
 /* ---- Living pixel-dust backdrop ---- */
@@ -767,6 +791,35 @@ footer a{color:#B9E4FA;text-decoration:none}
   const emailRe=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   const REQ={1:[["challenge","Biggest challenge"]],2:[["notworking","What is not working"]],7:[["capacityReason","Problem-solving reasoning"]],8:[["recommend","Recommendations"]],9:[["p1","Top fix 1"]]};
 
+  /* ---- submission reference ---- */
+  function genRef(){const h='ABCDEFGHJKLMNPQRSTVWXYZ23456789';let r='';for(let i=0;i<12;i++)r+=h[Math.floor(Math.random()*h.length)];return 'ION-'+r.slice(0,4)+'-'+r.slice(4,8)+'-'+r.slice(8);}
+  const submissionRef=genRef();
+  const subRefEl=document.getElementById('subRef');if(subRefEl)subRefEl.value=submissionRef;
+
+  /* ---- save toast ---- */
+  const saveToast=document.getElementById('saveToast');
+  let toastTimer=0,lastToast=0;
+  function showToast(){
+    const now=Date.now();if(now-lastToast<5000)return;lastToast=now;
+    if(!saveToast)return;
+    clearTimeout(toastTimer);
+    saveToast.classList.add('show');
+    toastTimer=setTimeout(()=>saveToast.classList.remove('show'),2200);
+  }
+
+  /* ---- copy reference button ---- */
+  const copyRefBtn=document.getElementById('copyRefBtn');
+  if(copyRefBtn){copyRefBtn.addEventListener('click',()=>{navigator.clipboard.writeText(submissionRef).then(()=>{copyRefBtn.textContent='Copied!';setTimeout(()=>copyRefBtn.textContent='Copy Reference',1800);}).catch(()=>{});});}
+
+  /* ---- character counters for key textareas ---- */
+  ['notworking','challenge','concerns','capacityReason','recommend'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const hint=document.createElement('div');hint.className='char-hint';hint.setAttribute('aria-live','polite');
+    el.parentNode.insertBefore(hint,el.nextSibling);
+    function update(){hint.textContent=el.value.length?el.value.length+' character'+(el.value.length===1?'':'s'):''}
+    el.addEventListener('input',update);update();
+  });
+
   steps.slice(0,LAST).forEach((s,i)=>{
     const d=document.createElement('span');d.className='dot';d.dataset.i=i;
     d.innerHTML='<b>'+(i+1)+'</b><span class="dl"> · '+s.dataset.step+'</span>';
@@ -782,13 +835,16 @@ footer a{color:#B9E4FA;text-decoration:none}
     pstep.textContent=cur>=LAST?'Complete':'Step '+stepNum+' of '+shownTotal;
     const pct=cur>=LAST?100:Math.round((cur/FORMLAST)*100);
     pfill.style.width=pct+'%';
-    const cheer=pct>=100?'complete':pct>=75?'almost there':pct>=50?'halfway':pct>=25?'good momentum':'let’s go';
-    ppct.textContent=pct+'% · '+cheer;
+    const cheer=pct>=100?'complete':pct>=75?'almost there':pct>=50?'halfway':pct>=25?'good momentum':"let's go";
+    ppct.textContent=pct+'% \u00b7 '+cheer;
     dots.forEach((d,di)=>{d.classList.toggle('active',di===cur);d.classList.toggle('done',di<cur);});
     window.scrollTo({top:0,behavior:'smooth'});
     const h=steps[cur].querySelector('h2');if(h){h.setAttribute('tabindex','-1');h.focus({preventScroll:true});}
     if(cur===FORMLAST)buildReview();
-    if(cur===LAST&&window.launchConfetti)window.launchConfetti();
+    if(cur===LAST){
+      if(window.launchConfetti)window.launchConfetti();
+      const refEl=document.getElementById('doneRefId');if(refEl)refEl.textContent=submissionRef;
+    }
   }
 
 function fieldWrap(el){return el.closest('.grid2 > div')||null;}
@@ -869,7 +925,7 @@ function markErr(el){el.classList.add('invalid');const w=fieldWrap(el);if(w)w.cl
   }
 
   /* ---- persistence ---- */
-  function save(){try{const fd=new FormData(form);const o={};for(const [k,v] of fd.entries()){if(k==='_honey')continue;if(o[k])o[k]=[].concat(o[k],v);else o[k]=v;}localStorage.setItem(STORE,JSON.stringify(o));}catch(e){}}
+  function save(){try{const fd=new FormData(form);const o={};for(const [k,v] of fd.entries()){if(k==='_honey')continue;if(o[k])o[k]=[].concat(o[k],v);else o[k]=v;}localStorage.setItem(STORE,JSON.stringify(o));showToast();}catch(e){}}
   function restore(){try{const raw=localStorage.getItem(STORE);if(!raw)return;const o=JSON.parse(raw);
     if(o.Department){dept.value=o.Department;const card=document.querySelector('#deptCards .preset[data-dept="'+CSS.escape(o.Department)+'"]');if(card)card.classList.add('sel');revealDept();}
     Object.entries(o).forEach(([k,v])=>{
@@ -893,24 +949,31 @@ function markErr(el){el.classList.add('invalid');const w=fieldWrap(el);if(w)w.cl
     if(bad!==null){show(bad);if(bad===0)validateStep(0);return;}
     box.className='status';box.textContent='';submitBtn.disabled=true;submitBtn.textContent='SENDING…';
 
+    // Populate reply-to and timestamp before serialising
+    const emailEl=document.getElementById('email');
+    const rtEl=document.getElementById('replyTo');
+    if(rtEl&&emailEl&&emailEl.value.trim())rtEl.value=emailEl.value.trim();
+    const stEl=document.getElementById('subTime');
+    if(stEl)stEl.value=new Date().toISOString();
+
     const fd=new FormData(form);
     const endpoint='https://formsubmit.co/ajax/ai@ionity.today';
 
     // Try AJAX first, then standard POST. FormSubmit delivers globally once activated.
-    async function sendAjax(retries=1){
+    async function sendAjax(retries=2){
       for(let attempt=0;attempt<=retries;attempt++){
         try{
           const res=await fetch(endpoint,{method:'POST',headers:{'Accept':'application/json'},body:fd});
           if(res.ok)return true;
           if(attempt===retries)throw new Error('HTTP '+res.status);
-          await new Promise(r=>setTimeout(r,900));
+          await new Promise(r=>setTimeout(r,1000*(attempt+1)));
         }catch(err){if(attempt===retries)throw err;}
       }
       return false;
     }
 
     try{
-      await sendAjax(1);
+      await sendAjax(2);
       try{localStorage.removeItem(STORE);}catch(e){}
       show(LAST);
     }catch(err){
