@@ -791,32 +791,59 @@ footer a{color:#B9E4FA;text-decoration:none}
   const emailRe=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   const REQ={1:[["challenge","Biggest challenge"]],2:[["notworking","What is not working"]],7:[["capacityReason","Problem-solving reasoning"]],8:[["recommend","Recommendations"]],9:[["p1","Top fix 1"]]};
 
-  /* ---- submission reference ---- */
-  function genRef(){const h='ABCDEFGHJKLMNPQRSTVWXYZ23456789';let r='';for(let i=0;i<12;i++)r+=h[Math.floor(Math.random()*h.length)];return 'ION-'+r.slice(0,4)+'-'+r.slice(4,8)+'-'+r.slice(8);}
+  /* ---- submission reference (format: ION-XXXX-XXXX-XXXX, 12 random chars split into 3 groups of 4) ---- */
+  const REF_CHARS='ABCDEFGHJKLMNPQRSTVWXYZ23456789'; // 31 unambiguous chars (no 0/O/1/I)
+  const REF_LEN=12; // 3 x 4-char groups
+  function genRef(){
+    const arr=new Uint8Array(REF_LEN);
+    window.crypto.getRandomValues(arr);
+    let r='';for(let i=0;i<REF_LEN;i++)r+=REF_CHARS[arr[i]%REF_CHARS.length];
+    return 'ION-'+r.slice(0,4)+'-'+r.slice(4,8)+'-'+r.slice(8);
+  }
   const submissionRef=genRef();
   const subRefEl=document.getElementById('subRef');if(subRefEl)subRefEl.value=submissionRef;
 
   /* ---- save toast ---- */
+  const TOAST_DISPLAY_MS=2200;       // how long "Progress saved" remains visible
+  const TOAST_MIN_INTERVAL_MS=5000;  // minimum gap between consecutive toasts (debounce)
+  const COPY_FEEDBACK_MS=1800;       // how long "Copied!" label lingers after success
+  const COPY_FALLBACK_MS=3000;       // how long fallback "Select & copy" hint lingers
   const saveToast=document.getElementById('saveToast');
-  let toastTimer=0,lastToast=0;
+  let toastHideTimer=0,lastToastAt=0;
   function showToast(){
-    const now=Date.now();if(now-lastToast<5000)return;lastToast=now;
+    const now=Date.now();if(now-lastToastAt<TOAST_MIN_INTERVAL_MS)return;lastToastAt=now;
     if(!saveToast)return;
-    clearTimeout(toastTimer);
+    clearTimeout(toastHideTimer);
     saveToast.classList.add('show');
-    toastTimer=setTimeout(()=>saveToast.classList.remove('show'),2200);
+    toastHideTimer=setTimeout(()=>saveToast.classList.remove('show'),TOAST_DISPLAY_MS);
   }
 
   /* ---- copy reference button ---- */
   const copyRefBtn=document.getElementById('copyRefBtn');
-  if(copyRefBtn){copyRefBtn.addEventListener('click',()=>{navigator.clipboard.writeText(submissionRef).then(()=>{copyRefBtn.textContent='Copied!';setTimeout(()=>copyRefBtn.textContent='Copy Reference',1800);}).catch(()=>{});});}
+  function copyRef(){
+    navigator.clipboard.writeText(submissionRef).then(()=>{
+      copyRefBtn.textContent='Copied!';
+      setTimeout(()=>copyRefBtn.textContent='Copy Reference',COPY_FEEDBACK_MS);
+    }).catch((err)=>{
+      // Clipboard API denied/unavailable — select the text node so user can copy manually
+      console.warn('[copyRef] clipboard unavailable:',err);
+      const sel=window.getSelection(),range=document.createRange();
+      range.selectNodeContents(document.getElementById('doneRefId'));
+      sel.removeAllRanges();sel.addRange(range);
+      copyRefBtn.textContent='Select & copy';
+      setTimeout(()=>{sel.removeAllRanges();copyRefBtn.textContent='Copy Reference';},COPY_FALLBACK_MS);
+    });
+  }
+  if(copyRefBtn){copyRefBtn.addEventListener('click',copyRef);}
 
-  /* ---- character counters for key textareas ---- */
+  /* ---- character counters for key textareas (aria-describedby links counter to field) ---- */
   ['notworking','challenge','concerns','capacityReason','recommend'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
-    const hint=document.createElement('div');hint.className='char-hint';hint.setAttribute('aria-live','polite');
+    const hintId=id+'-char-hint';
+    const hint=document.createElement('div');hint.className='char-hint';hint.id=hintId;hint.setAttribute('aria-live','polite');
     el.parentNode.insertBefore(hint,el.nextSibling);
-    function update(){hint.textContent=el.value.length?el.value.length+' character'+(el.value.length===1?'':'s'):''}
+    el.setAttribute('aria-describedby',((el.getAttribute('aria-describedby')||'')+' '+hintId).trim());
+    const update=()=>{const n=el.value.length;hint.textContent=n?(n+' character'+(n===1?'':'s')):'';};
     el.addEventListener('input',update);update();
   });
 
@@ -958,16 +985,17 @@ function markErr(el){el.classList.add('invalid');const w=fieldWrap(el);if(w)w.cl
 
     const fd=new FormData(form);
     const endpoint='https://formsubmit.co/ajax/ai@ionity.today';
+    const RETRY_BASE_DELAY_MS=1000; // base back-off delay; multiplied by attempt number
 
-    // Try AJAX first, then standard POST. FormSubmit delivers globally once activated.
-    async function sendAjax(retries=2){
-      for(let attempt=0;attempt<=retries;attempt++){
+    // Try AJAX first (up to maxRetries+1 total attempts), then standard POST.
+    async function sendAjax(maxRetries=2){
+      for(let attempt=0;attempt<=maxRetries;attempt++){
         try{
           const res=await fetch(endpoint,{method:'POST',headers:{'Accept':'application/json'},body:fd});
           if(res.ok)return true;
-          if(attempt===retries)throw new Error('HTTP '+res.status);
-          await new Promise(r=>setTimeout(r,1000*(attempt+1)));
-        }catch(err){if(attempt===retries)throw err;}
+          if(attempt===maxRetries)throw new Error('HTTP '+res.status);
+          await new Promise(r=>setTimeout(r,RETRY_BASE_DELAY_MS*(attempt+1)));
+        }catch(err){if(attempt===maxRetries)throw err;}
       }
       return false;
     }
